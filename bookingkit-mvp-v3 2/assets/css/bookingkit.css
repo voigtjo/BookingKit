@@ -1,0 +1,48 @@
+/* Status badge */
+.bkit-status-today .badge { display: inline-block; padding: .35rem .6rem; border-radius: .5rem; font-weight: 600; }
+.bkit-status-today.open .badge { background: #2ecc71; color: #fff; }
+.bkit-status-today.closed .badge { background: #e74c3c; color: #fff; }
+.bkit-status-today.ended .badge { background: #bfc7d1; color: #fff; }
+/* Calendar */
+.bkit-calendar { border: 1px solid #e2e2e2; border-radius: 12px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.04); max-width: 380px; margin: 0 auto; }
+.bkit-cal-head { display: flex; justify-content: center; margin-bottom: 8px; }
+.bkit-cal-title { font-size: 1.1rem; font-weight: 700; }
+.bkit-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.bkit-cell { text-align: center; padding: 8px; border-radius: 10px; min-height: 40px; border: none; background: transparent; }
+.bkit-wd { font-weight: 700; background: #fafafa; }
+.bkit-empty { background: transparent; border: none; }
+.bkit-cell.day { position: relative; background: #f8f8f8; cursor: default; }
+.bkit-cell.day .num { position: relative; z-index: 2; font-weight: 700; }
+.bkit-cell.day.open { background: #e9f9ee; outline: 1px solid #bfead0; }
+.bkit-cell.day.open.clickable { cursor: pointer; }
+.bkit-cell.day.closed { background: #fdeaea; outline: 1px solid #f2c6c6; }
+.bkit-cell.day.disabled { opacity: .6; cursor: not-allowed; }
+/* Legend */
+.bkit-legend { display: flex; gap: 12px; margin-top: 10px; justify-content: center; }
+.bkit-legend .legend { display:inline-flex; align-items:center; gap:6px; }
+.bkit-legend .legend::before { content:""; width:14px; height:14px; display:inline-block; border-radius:4px; }
+.bkit-legend .legend.open::before { background:#e9f9ee; border:1px solid #bfead0; }
+.bkit-legend .legend.closed::before { background:#fdeaea; border:1px solid #f2c6c6; }
+/* Admin inputs */
+.bk-table-hours th, .bk-table-hours td { padding: 6px 10px; }
+.bk-table-hours input[type="text"], .bk-table-hours input[type="date"], .bk-table-hours input[type="tel"], .bk-table-hours input[type="email"], .bk-table-hours select { height: 36px; padding: 6px 8px; line-height: 24px; }
+/* Modal */
+.bkit-modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 9999; }
+.bkit-modal-box { background: #fff; border-radius: 12px; padding: 16px; width: 95%; max-width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+.bkit-modal-head { display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 10px; }
+.bkit-modal-head .bkit-close { border: none; background: transparent; font-size: 20px; line-height: 1; cursor: pointer; }
+.bkit-res-form .row, .bkit-res-form .row-2 { display: grid; gap: 8px; margin-bottom: 10px; }
+.bkit-res-form .row-2 { grid-template-columns: 1fr 1fr; }
+.bkit-res-form input, .bkit-res-form textarea { width: 100%; height: 38px; padding: 6px 8px; }
+.bkit-res-form textarea { height: auto; }
+.bkit-res-form .actions { display: flex; gap: 8px; justify-content: flex-end; }
+.bkit-feedback { margin-top: 10px; font-weight: 600; }
+
+/* Past days greyed and disabled */
+.bkit-cell.day.past{background:#f2f2f2;color:#9aa0a6;cursor:not-allowed;}
+.bkit-cell.day.past .num{opacity:0.8}
+/* Calendar nav */
+.bkit-cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.bkit-cal-head .bkit-cal-title{font-weight:700}
+.bkit-cal-head .bkit-nav{display:inline-block;padding:2px 8px;border:1px solid #ddd;border-radius:6px;text-decoration:none}
+.bkit-cal-head .bkit-nav.disabled{opacity:.5;pointer-events:none}
