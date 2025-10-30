@@ -1,38 +1,86 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
+
 class BKIT_MVP_OpeningHours_Admin {
+
     public static function register_menu() {
-        add_menu_page(__('BookingKit', 'bookingkit-mvp'), __('BookingKit', 'bookingkit-mvp'), 'manage_options', 'bookingkit', [__CLASS__, 'render_opening_hours_page'], 'dashicons-clock', 26);
-        add_submenu_page('bookingkit', __('Opening Hours', 'bookingkit-mvp'), __('Opening Hours', 'bookingkit-mvp'), 'manage_options', 'bookingkit', [__CLASS__, 'render_opening_hours_page']);
+        add_menu_page(
+            __('BookingKit', 'bookingkit-mvp'),
+            __('BookingKit', 'bookingkit-mvp'),
+            'manage_options',
+            'bookingkit',
+            [__CLASS__, 'render_opening_hours_page'],
+            'dashicons-clock',
+            26
+        );
+        add_submenu_page(
+            'bookingkit',
+            __('Opening Hours', 'bookingkit-mvp'),
+            __('Opening Hours', 'bookingkit-mvp'),
+            'manage_options',
+            'bookingkit',
+            [__CLASS__, 'render_opening_hours_page']
+        );
     }
+
     public static function default_hours() {
-        return [1=>['closed'=>1,'from'=>'','to'=>''],2=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],3=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],4=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],5=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],6=>['closed'=>0,'from'=>'10:00','to'=>'open end'],7=>['closed'=>0,'from'=>'10:00','to'=>'open end']];
+        return [
+            1=>['closed'=>1,'from'=>'','to'=>''],
+            2=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],
+            3=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],
+            4=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],
+            5=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],
+            6=>['closed'=>0,'from'=>'10:00','to'=>'open end'],
+            7=>['closed'=>0,'from'=>'10:00','to'=>'open end']
+        ];
     }
+
     public static function render_opening_hours_page() {
         if ( isset($_POST['bkit_hours_nonce']) && wp_verify_nonce($_POST['bkit_hours_nonce'], 'save_bkit_hours') ) {
             $hours = [];
             for ($d=1;$d<=7;$d++) {
-                $hours[$d] = ['closed' => isset($_POST["day{$d}_closed"]) ? 1 : 0,'from' => sanitize_text_field($_POST["day{$d}_from"] ?? ''),'to' => sanitize_text_field($_POST["day{$d}_to"] ?? ''),];
+                $hours[$d] = [
+                    'closed' => isset($_POST["day{$d}_closed"]) ? 1 : 0,
+                    'from'   => sanitize_text_field($_POST["day{$d}_from"] ?? ''),
+                    'to'     => sanitize_text_field($_POST["day{$d}_to"] ?? ''),
+                ];
             }
             update_option('bkit_mvp_opening_hours', $hours);
             echo '<div class="updated"><p>'.esc_html__('Saved.', 'bookingkit-mvp').'</p></div>';
         }
+
         $hours = get_option('bkit_mvp_opening_hours', self::default_hours());
-        $days = [1=>__('Monday'),2=>__('Tuesday'),3=>__('Wednesday'),4=>__('Thursday'),5=>__('Friday'),6=>__('Saturday'),7=>__('Sunday')];
+        $days  = [
+            1=>__('Monday'), 2=>__('Tuesday'), 3=>__('Wednesday'),
+            4=>__('Thursday'), 5=>__('Friday'), 6=>__('Saturday'), 7=>__('Sunday')
+        ];
         ?>
         <div class="wrap">
             <h1><?php echo esc_html__('Opening Hours', 'bookingkit-mvp'); ?></h1>
             <form method="post">
                 <?php wp_nonce_field('save_bkit_hours','bkit_hours_nonce'); ?>
                 <table class="form-table bk-table-hours">
-                    <thead><tr><th><?php esc_html_e('Day'); ?></th><th><?php esc_html_e('Closed'); ?></th><th><?php esc_html_e('From'); ?></th><th><?php esc_html_e('To'); ?></th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e('Day'); ?></th>
+                            <th><?php esc_html_e('Closed'); ?></th>
+                            <th><?php esc_html_e('From'); ?></th>
+                            <th><?php esc_html_e('To'); ?></th>
+                        </tr>
+                    </thead>
                     <tbody>
                     <?php foreach ($days as $idx=>$label): $row = $hours[$idx] ?? ['closed'=>0,'from'=>'','to'=>'']; ?>
                         <tr>
                             <th scope="row"><?php echo esc_html($label); ?></th>
-                            <td><label><input type="checkbox" name="day<?php echo $idx; ?>_closed" <?php checked(1, intval($row['closed'])); ?> /> <?php esc_html_e('Closed'); ?></label></td>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="day<?php echo $idx; ?>_closed"
+                                           <?php checked(1, intval($row['closed'])); ?> />
+                                    <?php esc_html_e('Closed'); ?>
+                                </label>
+                            </td>
                             <td><input type="text" name="day<?php echo $idx; ?>_from" value="<?php echo esc_attr($row['from']); ?>" class="regular-text" /></td>
-                            <td><input type="text" name="day<?php echo $idx; ?>_to" value="<?php echo esc_attr($row['to']); ?>" class="regular-text" /></td>
+                            <td><input type="text" name="day<?php echo $idx; ?>_to"   value="<?php echo esc_attr($row['to']);   ?>" class="regular-text" /></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -46,5 +94,29 @@ class BKIT_MVP_OpeningHours_Admin {
         </div>
         <?php
     }
-    public static function get_hours() { $hours = get_option('bkit_mvp_opening_hours', self::default_hours()); return is_array($hours) ? $hours : self::default_hours(); }
+
+    public static function get_hours() {
+        $hours = get_option('bkit_mvp_opening_hours', self::default_hours());
+
+        if (!is_array($hours)) {
+            return self::default_hours();
+        }
+
+        // Bereits korrekt 1..7?
+        if (isset($hours[1]) && isset($hours[7]) && !isset($hours[0])) {
+            return $hours;
+        }
+
+        // Altes 0..6-Schema (0=So..6=Sa) -> auf 1..7 mappen
+        if (isset($hours[0]) && isset($hours[6])) {
+            $norm = [];
+            for ($i = 0; $i <= 6; $i++) {
+                $target = ($i === 0) ? 7 : $i; // 0(SO)->7, 1(MO)->1, ..., 6(SA)->6
+                $norm[$target] = is_array($hours[$i]) ? $hours[$i] : ['closed'=>0,'from'=>'','to'=>''];
+            }
+            return $norm;
+        }
+
+        return self::default_hours();
+    }
 }
