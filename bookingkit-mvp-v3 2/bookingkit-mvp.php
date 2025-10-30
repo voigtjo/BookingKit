@@ -15,6 +15,7 @@ require_once BKIT_MVP_PATH . 'includes/Admin/ClosedDays.php';
 require_once BKIT_MVP_PATH . 'includes/Shortcodes/Calendar.php';
 require_once BKIT_MVP_PATH . 'includes/Shortcodes/OpeningHours.php';
 require_once BKIT_MVP_PATH . 'includes/Shortcodes/StatusToday.php';
+
 class BookingKit_MVP {
     public function __construct() {
         add_action('init', ['BKIT_MVP_Reservation', 'register_cpt']);
@@ -31,6 +32,19 @@ class BookingKit_MVP {
         add_shortcode('bk_status_today', ['BKIT_MVP_Shortcode_StatusToday', 'render']);
         add_action('wp_ajax_bkit_mvp_submit_res', [$this, 'ajax_submit_res']);
         add_action('wp_ajax_nopriv_bkit_mvp_submit_res', [$this, 'ajax_submit_res']);
+        add_action('admin_menu', ['BKIT_MVP_ClosedDays_Admin', 'register_menu']);
+
+
+        // AJAX für Closed Day speichern (Admin)
+        add_action('wp_ajax_bkit_mvp_save_closed_day', ['BKIT_MVP_ClosedDays_Admin', 'ajax_save']);
+        // AJAX: Closed-Reason (öffentlich)
+        add_action('wp_ajax_bkit_mvp_closed_reason',  ['BKIT_MVP_ClosedDays_Admin','ajax_reason']);
+        add_action('wp_ajax_nopriv_bkit_mvp_closed_reason', ['BKIT_MVP_ClosedDays_Admin','ajax_reason']);
+        add_action('wp_ajax_bkit_mvp_get_closed', ['BKIT_MVP_ClosedDays_Admin', 'ajax_get_closed_info']);
+        add_action('wp_ajax_nopriv_bkit_mvp_get_closed', ['BKIT_MVP_ClosedDays_Admin', 'ajax_get_closed_info']);
+
+
+
     }
     public function enqueue_assets() {
         wp_enqueue_style('bookingkit-mvp', BKIT_MVP_URL . 'assets/css/bookingkit.css', [], '0.3.0');
@@ -41,10 +55,21 @@ class BookingKit_MVP {
         ]);
     }
     public function enqueue_admin_assets($hook) {
-        if ( strpos($hook, 'bookingkit') !== false || in_array(get_post_type(), ['bk_closed_day','bk_reservation'], true) ) {
+        // Screens erkennen
+        $is_closed_days_cpt = in_array(get_post_type(), ['bk_closed_day','bk_reservation'], true);
+        $is_closed_days_cal = (strpos($hook, 'bookingkit_page_bookingkit_closed_days') !== false);
+
+        if ( strpos($hook, 'bookingkit') !== false || $is_closed_days_cpt || $is_closed_days_cal ) {
             wp_enqueue_style('bookingkit-mvp', BKIT_MVP_URL . 'assets/css/bookingkit.css', [], '0.3.0');
         }
+        if ( $is_closed_days_cal ) {
+            wp_enqueue_script('bookingkit-admin', BKIT_MVP_URL . 'assets/js/bookingkit-admin.js', ['jquery'], '0.3.0', true);
+            wp_localize_script('bookingkit-admin', 'BKIT_MVP_ADMIN', [
+                'nonce' => wp_create_nonce('bkit_mvp_admin')
+            ]);
+        }
     }
+
     public static function activate() {
         BKIT_MVP_Reservation::register_cpt();
         BKIT_MVP_ClosedDays_Admin::register_cpt();

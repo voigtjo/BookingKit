@@ -60,3 +60,6 @@
 .bk-day-idx{ margin-left:6px; color:#777; font-weight:600 }
 .bkit-wd .bk-wd-idx{ color:#777; font-size:.75em }
 
+.bkit-cell.day.closed{ cursor:pointer; }
+
+

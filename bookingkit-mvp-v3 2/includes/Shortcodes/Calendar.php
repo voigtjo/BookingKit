@@ -30,10 +30,10 @@ class BKIT_MVP_Shortcode_Calendar {
         $month       = (int) $d->format('n');
         $daysInMonth = (int) $d->format('t');
 
-        // robustes Mapping 0=So..6=Sa -> 1=Mo..7=So
+        // 0=So..6=Sa -> 1=Mo..7=So
         $dow0_to_N = static function (int $dow0): int { return ($dow0 === 0) ? 7 : $dow0; };
 
-        // erster Wochen-Tag (1..7)
+        // erster Wochentag (1..7)
         if (function_exists('jddayofweek') && function_exists('cal_to_jd')) {
             $firstDow0 = jddayofweek(cal_to_jd(CAL_GREGORIAN, $month, 1, $year), 0);
             $firstDowN = $dow0_to_N($firstDow0);
@@ -96,7 +96,7 @@ class BKIT_MVP_Shortcode_Calendar {
 
             <div class="bkit-grid" data-bk-cal>
                 <?php
-                // Wochentagsköpfe (Montag zuerst), ohne Indizes
+                // Wochentagsköpfe (Montag zuerst)
                 global $wp_locale;
                 $wd_abbr      = array_values($wp_locale->weekday_abbrev);             // [So, Mo, Di, Mi, Do, Fr, Sa]
                 $wd_mon_first = array_merge(array_slice($wd_abbr, 1), [$wd_abbr[0]]); // [Mo..Sa, So]
@@ -111,11 +111,23 @@ class BKIT_MVP_Shortcode_Calendar {
 
                 foreach ($cells as $c) {
                     $isClickable = (!$c['past'] && $c['state'] === 'open');
+
+                    // Reason für geschlossene Tage mitgeben
+                    $reasonAttr = '';
+                    if ($c['state'] === 'closed') {
+                        $reason = BKIT_MVP_ClosedDays_Admin::get_reason($c['date']);
+                        if ($reason !== '') {
+                            $reasonAttr = ' data-reason="' . esc_attr($reason) . '"';
+                        }
+                    }
+
                     $classes = 'bkit-cell day ' . ($c['past'] ? 'past' : $c['state']) . ($isClickable ? ' clickable' : ' disabled');
+
                     printf(
-                        '<button class="%s" data-date="%s" type="button" %s><span class="num">%d</span></button>',
+                        '<button class="%s" data-date="%s"%s type="button" %s><span class="num">%d</span></button>',
                         esc_attr($classes),
                         esc_attr($c['date']),
+                        $reasonAttr,
                         $isClickable ? '' : 'aria-disabled="true"',
                         (int) $c['day']
                     );
@@ -130,33 +142,48 @@ class BKIT_MVP_Shortcode_Calendar {
                 </div>
             <?php endif; ?>
 
+            <!-- Modal -->
             <div class="bkit-modal" style="display:none;">
-                <div class="bkit-modal-box">
-                    <div class="bkit-modal-head">
-                        <span class="title"><?php esc_html_e('Reservation request', 'bookingkit-mvp'); ?></span>
-                        <button class="bkit-close" type="button" aria-label="<?php esc_attr_e('Close','bookingkit-mvp'); ?>">×</button>
-                    </div>
-                    <form class="bkit-res-form">
-                        <input type="hidden" name="date" value="">
-                        <div class="row"><label><?php esc_html_e('Date','bookingkit-mvp'); ?></label><input type="text" name="date_view" value="" readonly></div>
-                        <div class="row-2">
-                            <div><label><?php esc_html_e('Time','bookingkit-mvp'); ?></label><input type="time" name="time"></div>
-                            <div><label><?php esc_html_e('Persons','bookingkit-mvp'); ?></label><input type="number" name="persons" min="1" max="20" value="2"></div>
-                        </div>
-                        <div class="row-2">
-                            <div><label><?php esc_html_e('Name','bookingkit-mvp'); ?></label><input type="text" name="name" required></div>
-                            <div><label><?php esc_html_e('Phone','bookingkit-mvp'); ?></label><input type="tel" name="phone"></div>
-                        </div>
-                        <div class="row"><label><?php esc_html_e('Email','bookingkit-mvp'); ?></label><input type="email" name="email" required></div>
-                        <div class="row"><label><?php esc_html_e('Message','bookingkit-mvp'); ?></label><textarea name="message" rows="3"></textarea></div>
-                        <div class="actions">
-                            <button type="submit" class="button button-primary"><?php esc_html_e('Send request','bookingkit-mvp'); ?></button>
-                            <button type="button" class="button bkit-cancel"><?php esc_html_e('Cancel','bookingkit-mvp'); ?></button>
-                        </div>
-                    </form>
-                    <div class="bkit-modal-foot bkit-feedback" style="display:none;"></div>
+              <div class="bkit-modal-box">
+                <div class="bkit-modal-head">
+                  <span class="title"><?php esc_html_e('Reservation request', 'bookingkit-mvp'); ?></span>
+                  <button class="bkit-close" type="button" aria-label="<?php esc_attr_e('Close','bookingkit-mvp'); ?>">×</button>
                 </div>
+
+                <!-- INFO für geschlossene Tage -->
+                <div class="bkit-closed-info" style="display:none;">
+                  <p><strong><?php esc_html_e('Closed','bookingkit-mvp'); ?></strong></p>
+                  <p class="bkit-closed-date"></p>
+                  <p class="bkit-closed-reason"></p>
+                  <div class="actions">
+                    <button type="button" class="button bkit-cancel"><?php esc_html_e('Close','bookingkit-mvp'); ?></button>
+                  </div>
+                </div>
+
+                <!-- Formular für offene Tage -->
+                <form class="bkit-res-form">
+                  <input type="hidden" name="date" value="">
+                  <div class="row"><label><?php esc_html_e('Date','bookingkit-mvp'); ?></label><input type="text" name="date_view" value="" readonly></div>
+                  <div class="row-2">
+                    <div><label><?php esc_html_e('Time','bookingkit-mvp'); ?></label><input type="time" name="time"></div>
+                    <div><label><?php esc_html_e('Persons','bookingkit-mvp'); ?></label><input type="number" name="persons" min="1" max="20" value="2"></div>
+                  </div>
+                  <div class="row-2">
+                    <div><label><?php esc_html_e('Name','bookingkit-mvp'); ?></label><input type="text" name="name" required></div>
+                    <div><label><?php esc_html_e('Phone','bookingkit-mvp'); ?></label><input type="tel" name="phone"></div>
+                  </div>
+                  <div class="row"><label><?php esc_html_e('Email','bookingkit-mvp'); ?></label><input type="email" name="email" required></div>
+                  <div class="row"><label><?php esc_html_e('Message','bookingkit-mvp'); ?></label><textarea name="message" rows="3"></textarea></div>
+                  <div class="actions">
+                    <button type="submit" class="button button-primary"><?php esc_html_e('Send request','bookingkit-mvp'); ?></button>
+                    <button type="button" class="button bkit-cancel"><?php esc_html_e('Cancel','bookingkit-mvp'); ?></button>
+                  </div>
+                </form>
+
+                <div class="bkit-modal-foot bkit-feedback" style="display:none;"></div>
+              </div>
             </div>
+
         </div>
         <?php
         return ob_get_clean();
