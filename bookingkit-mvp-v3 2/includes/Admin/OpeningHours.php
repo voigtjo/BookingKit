@@ -4,8 +4,6 @@ class BKIT_MVP_OpeningHours_Admin {
     public static function register_menu() {
         add_menu_page(__('BookingKit', 'bookingkit-mvp'), __('BookingKit', 'bookingkit-mvp'), 'manage_options', 'bookingkit', [__CLASS__, 'render_opening_hours_page'], 'dashicons-clock', 26);
         add_submenu_page('bookingkit', __('Opening Hours', 'bookingkit-mvp'), __('Opening Hours', 'bookingkit-mvp'), 'manage_options', 'bookingkit', [__CLASS__, 'render_opening_hours_page']);
-        add_submenu_page('bookingkit', __('Closed Days', 'bookingkit-mvp'), __('Closed Days', 'bookingkit-mvp'), 'manage_options', 'edit.php?post_type=bk_closed_day');
-        add_submenu_page('bookingkit', __('Reservations', 'bookingkit-mvp'), __('Reservations', 'bookingkit-mvp'), 'manage_options', 'edit.php?post_type=bk_reservation');
     }
     public static function default_hours() {
         return [1=>['closed'=>1,'from'=>'','to'=>''],2=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],3=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],4=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],5=>['closed'=>0,'from'=>'16:30','to'=>'22:00'],6=>['closed'=>0,'from'=>'10:00','to'=>'open end'],7=>['closed'=>0,'from'=>'10:00','to'=>'open end']];

@@ -46,3 +46,14 @@
 .bkit-cal-head .bkit-cal-title{font-weight:700}
 .bkit-cal-head .bkit-nav{display:inline-block;padding:2px 8px;border:1px solid #ddd;border-radius:6px;text-decoration:none}
 .bkit-cal-head .bkit-nav.disabled{opacity:.5;pointer-events:none}
+
+/* Opening Hours – zweispaltig & sauber aligned */
+.bk-oh-grid{list-style:none;margin:.5rem 0;padding:0;display:grid;grid-template-columns:auto 1fr;column-gap:1rem;row-gap:.25rem}
+.bk-oh-grid li{display:contents}
+.bk-oh-grid .day{justify-self:end;font-weight:600}
+.bk-oh-grid .time{justify-self:start}
+.bk-oh-grid .time.is-closed{opacity:.75;font-style:italic}
+@media (max-width:600px){
+  .bk-oh-grid{grid-template-columns:1fr}
+  .bk-oh-grid .day{justify-self:start}
+}
