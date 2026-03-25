@@ -11,15 +11,16 @@
 
   function openModalForClosed(dateISO, datePretty, reason) {
     var $m = $('.bkit-modal');
-    $m.find('.title').text('Geschlossen');
+
     $m.find('.bkit-closed-info').show();
     $m.find('.bkit-closed-date').text(datePretty || '');
     $m.find('.bkit-closed-reason').text(reason ? ('Grund: ' + reason) : '');
+
     showModal();
   }
 
   // Geschlossene Tage → Info (Reason kommt aus data-reason, kein Ajax)
-  $(document).on('click', '.bkit-cell.day.closed', function () {
+$(document).on('click', '.bkit-cell.day.closed.clickable', function () {
     var date = $(this).data('date') || '';
     var reason = $(this).data('reason') || '';
     var pretty;

@@ -27,16 +27,66 @@
 .bk-table-hours th, .bk-table-hours td { padding: 6px 10px; }
 .bk-table-hours input[type="text"], .bk-table-hours input[type="date"], .bk-table-hours input[type="tel"], .bk-table-hours input[type="email"], .bk-table-hours select { height: 36px; padding: 6px 8px; line-height: 24px; }
 /* Modal */
-.bkit-modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 9999; }
-.bkit-modal-box { background: #fff; border-radius: 12px; padding: 16px; width: 95%; max-width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
-.bkit-modal-head { display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 10px; }
-.bkit-modal-head .bkit-close { border: none; background: transparent; font-size: 20px; line-height: 1; cursor: pointer; }
-.bkit-res-form .row, .bkit-res-form .row-2 { display: grid; gap: 8px; margin-bottom: 10px; }
-.bkit-res-form .row-2 { grid-template-columns: 1fr 1fr; }
-.bkit-res-form input, .bkit-res-form textarea { width: 100%; height: 38px; padding: 6px 8px; }
-.bkit-res-form textarea { height: auto; }
-.bkit-res-form .actions { display: flex; gap: 8px; justify-content: flex-end; }
-.bkit-feedback { margin-top: 10px; font-weight: 600; }
+.bkit-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.bkit-modal-box {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 95%;
+  max-width: 520px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+
+.bkit-modal-box--closed {
+  padding-top: 20px;
+}
+
+.bkit-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bkit-closed-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bkit-closed-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.bkit-closed-date,
+.bkit-closed-reason {
+  margin: 0;
+}
+
+.bkit-modal-actions {
+  margin-top: 8px;
+}
+
+.bkit-feedback {
+  margin-top: 10px;
+  font-weight: 600;
+}
 
 /* Past days greyed and disabled */
 .bkit-cell.day.past{background:#f2f2f2;color:#9aa0a6;cursor:not-allowed;}

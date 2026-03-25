@@ -166,23 +166,19 @@ class BKIT_MVP_Shortcode_Calendar {
 
             <!-- Modal -->
             <div class="bkit-modal" style="display:none;">
-              <div class="bkit-modal-box">
-                <div class="bkit-modal-head">
-                  <button class="bkit-close" type="button" aria-label="<?php echo esc_attr('Schließen'); ?>">×</button>
-                </div>
+            <div class="bkit-modal-box bkit-modal-box--closed">
+                <button class="bkit-close" type="button" aria-label="<?php echo esc_attr('Schließen'); ?>">×</button>
 
-                <!-- INFO für geschlossene Tage -->
                 <div class="bkit-closed-info" style="display:none;">
-                  <p><strong><?php echo esc_html('Geschlossen'); ?></strong></p>
-                  <p class="bkit-closed-date"></p>
-                  <p class="bkit-closed-reason"></p>
-                  <div class="actions">
-                    <button type="button" class="button bkit-cancel"><?php echo esc_html('Schließen'); ?></button>
-                  </div>
-                </div>
+                <div class="bkit-closed-title"><?php echo esc_html('Geschlossen'); ?></div>
+                <div class="bkit-closed-date"></div>
+                <div class="bkit-closed-reason"></div>
 
-                <!-- MVP: Kein Formular. Späterer Ausbau: Reservierungsformular für offene Tage -->
-              </div>
+                <div class="bkit-modal-actions">
+                    <button type="button" class="button bkit-cancel"><?php echo esc_html('Schließen'); ?></button>
+                </div>
+                </div>
+            </div>
             </div>
 
         </div>
