@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalendarKit MVP
  * Description: Reservations helper with opening hours, closed days, clickable calendar + request modal.
- * Version: 0.3.5
+ * Version: 0.3.6
  * Author: Jörn / ChatGPT
  * Text Domain: bookingkit-mvp
  */
@@ -55,15 +55,15 @@ class CalendarKit_MVP {
         // AJAX für Closed Day speichern (Admin)
         add_action('wp_ajax_bkit_mvp_save_closed_day', ['BKIT_MVP_ClosedDays_Admin', 'ajax_save']);
         // AJAX: Closed-Reason (öffentlich)
-        add_action('wp_ajax_bkit_mvp_closed_reason',  ['BKIT_MVP_ClosedDays_Admin','ajax_reason']);
-        add_action('wp_ajax_nopriv_bkit_mvp_closed_reason', ['BKIT_MVP_ClosedDays_Admin','ajax_reason']);
+        add_action('wp_ajax_bkit_mvp_closed_reason', ['BKIT_MVP_ClosedDays_Admin', 'ajax_reason']);
+        add_action('wp_ajax_nopriv_bkit_mvp_closed_reason', ['BKIT_MVP_ClosedDays_Admin', 'ajax_reason']);
         add_action('wp_ajax_bkit_mvp_get_closed', ['BKIT_MVP_ClosedDays_Admin', 'ajax_get_closed_info']);
         add_action('wp_ajax_nopriv_bkit_mvp_get_closed', ['BKIT_MVP_ClosedDays_Admin', 'ajax_get_closed_info']);
     }
 
     public function enqueue_assets() {
-        wp_enqueue_style('bookingkit-mvp', BKIT_MVP_URL . 'assets/css/bookingkit.css', [], '0.3.5');
-        wp_enqueue_script('bookingkit-mvp', BKIT_MVP_URL . 'assets/js/bookingkit.js', ['jquery'], '0.3.5', true);
+        wp_enqueue_style('bookingkit-mvp', BKIT_MVP_URL . 'assets/css/bookingkit.css', [], '0.3.6');
+        wp_enqueue_script('bookingkit-mvp', BKIT_MVP_URL . 'assets/js/bookingkit.js', ['jquery'], '0.3.6', true);
         wp_localize_script('bookingkit-mvp', 'BKIT_MVP', [
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('bkit_mvp_nonce'),
@@ -72,15 +72,16 @@ class CalendarKit_MVP {
 
     public function enqueue_admin_assets($hook) {
         // Screens erkennen
-        $is_closed_days_cpt = in_array(get_post_type(), ['bk_closed_day','bk_reservation'], true);
+        $is_closed_days_cpt = in_array(get_post_type(), ['bk_closed_day', 'bk_reservation'], true);
         // Submenu-Hook: <parent>_page_<slug>
-        $is_calendar_page   = (strpos($hook, 'calendarkit_page_calendarkit_calendar') !== false);
+        $is_calendar_page = (strpos($hook, 'calendarkit_page_calendarkit_calendar') !== false);
 
-        if ( strpos($hook, 'calendarkit') !== false || $is_closed_days_cpt || $is_calendar_page ) {
-            wp_enqueue_style('bookingkit-mvp', BKIT_MVP_URL . 'assets/css/bookingkit.css', [], '0.3.5');
+        if (strpos($hook, 'calendarkit') !== false || $is_closed_days_cpt || $is_calendar_page) {
+            wp_enqueue_style('bookingkit-mvp', BKIT_MVP_URL . 'assets/css/bookingkit.css', [], '0.3.6');
         }
-        if ( $is_calendar_page ) {
-            wp_enqueue_script('bookingkit-admin', BKIT_MVP_URL . 'assets/js/bookingkit-admin.js', ['jquery'], '0.3.5', true);
+
+        if ($is_calendar_page) {
+            wp_enqueue_script('bookingkit-admin', BKIT_MVP_URL . 'assets/js/bookingkit-admin.js', ['jquery'], '0.3.6', true);
             wp_localize_script('bookingkit-admin', 'BKIT_MVP_ADMIN', [
                 'nonce' => wp_create_nonce('bkit_mvp_admin')
             ]);
@@ -92,12 +93,23 @@ class CalendarKit_MVP {
      * - CPTs registrieren
      * - Rewrite flushen
      * - Capability calendarkit_manage an Admin + Redakteur geben
+     * - Optionen nur initial anlegen, niemals überschreiben
      */
     public static function activate() {
         BKIT_MVP_Reservation::register_cpt();
         BKIT_MVP_ClosedDays_Admin::register_cpt();
 
         self::ensure_roles_caps();
+
+        // Öffnungszeiten nur beim echten Erstinstallationsfall anlegen
+        if (false === get_option('bkit_mvp_opening_hours', false)) {
+            add_option('bkit_mvp_opening_hours', BKIT_MVP_OpeningHours_Admin::default_hours());
+        }
+
+        // Hinweistext unter Öffnungszeiten nur beim echten Erstinstallationsfall anlegen
+        if (false === get_option('bkit_mvp_opening_hours_note', false)) {
+            add_option('bkit_mvp_opening_hours_note', '');
+        }
 
         flush_rewrite_rules();
     }
@@ -107,20 +119,25 @@ class CalendarKit_MVP {
      */
     private static function ensure_roles_caps() {
         // Admin bekommt das Recht immer
-        if ( $admin = get_role('administrator') ) {
+        if ($admin = get_role('administrator')) {
             $admin->add_cap(self::CAP_MANAGE);
         }
 
         // Redakteur bekommt das Recht
-        if ( $editor = get_role('editor') ) {
+        if ($editor = get_role('editor')) {
             $editor->add_cap(self::CAP_MANAGE);
         }
     }
 
+    /**
+     * Beim Uninstall Benutzerdaten NICHT löschen.
+     * Sonst gehen gepflegte Öffnungszeiten/Hinweise verloren und bei Neuinstallation
+     * tauchen wieder Defaultwerte auf.
+     */
     public static function uninstall() {
-        delete_option('bkit_mvp_opening_hours');
+        // Benutzerdaten bewusst nicht löschen.
 
-        // Optional: Caps wieder entfernen (wenn du beim Uninstall "sauber aufräumen" willst)
+        // Optional: Caps wieder entfernen
         // if ( $admin = get_role('administrator') ) { $admin->remove_cap(self::CAP_MANAGE); }
         // if ( $editor = get_role('editor') ) { $editor->remove_cap(self::CAP_MANAGE); }
     }
@@ -128,27 +145,27 @@ class CalendarKit_MVP {
     public function ajax_submit_res() {
         check_ajax_referer('bkit_mvp_nonce', 'nonce');
 
-        $date = sanitize_text_field($_POST['date'] ?? '');
-        $time = sanitize_text_field($_POST['time'] ?? '');
+        $date    = sanitize_text_field($_POST['date'] ?? '');
+        $time    = sanitize_text_field($_POST['time'] ?? '');
         $persons = intval($_POST['persons'] ?? 0);
-        $name = sanitize_text_field($_POST['name'] ?? '');
-        $phone = sanitize_text_field($_POST['phone'] ?? '');
-        $email = sanitize_email($_POST['email'] ?? '');
+        $name    = sanitize_text_field($_POST['name'] ?? '');
+        $phone   = sanitize_text_field($_POST['phone'] ?? '');
+        $email   = sanitize_email($_POST['email'] ?? '');
         $message = sanitize_textarea_field($_POST['message'] ?? '');
 
-        if ( empty($date) || empty($name) || empty($email) ) {
-            wp_send_json_error(['msg'=>__('Please fill required fields', 'bookingkit-mvp')], 400);
+        if (empty($date) || empty($name) || empty($email)) {
+            wp_send_json_error(['msg' => __('Please fill required fields', 'bookingkit-mvp')], 400);
         }
 
         $post_id = wp_insert_post([
-            'post_type' => 'bk_reservation',
-            'post_status' => 'publish',
-            'post_title' => sprintf(__('Reservation request %s – %s', 'bookingkit-mvp'), $date, $name),
+            'post_type'    => 'bk_reservation',
+            'post_status'  => 'publish',
+            'post_title'   => sprintf(__('Reservation request %s – %s', 'bookingkit-mvp'), $date, $name),
             'post_content' => $message,
         ], true);
 
-        if ( is_wp_error($post_id) ) {
-            wp_send_json_error(['msg'=>$post_id->get_error_message()], 500);
+        if (is_wp_error($post_id)) {
+            wp_send_json_error(['msg' => $post_id->get_error_message()], 500);
         }
 
         update_post_meta($post_id, '_bk_date', $date);
@@ -158,7 +175,7 @@ class CalendarKit_MVP {
         update_post_meta($post_id, '_bk_phone', $phone);
         update_post_meta($post_id, '_bk_email', $email);
 
-        wp_send_json_success(['msg'=>__('Request received', 'bookingkit-mvp')]);
+        wp_send_json_success(['msg' => __('Request received', 'bookingkit-mvp')]);
     }
 
     public function ajax_calendar_month() {

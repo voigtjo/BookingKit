@@ -3,6 +3,7 @@
 .bkit-status-today.open .badge { background: #2ecc71; color: #fff; }
 .bkit-status-today.closed .badge { background: #e74c3c; color: #fff; }
 .bkit-status-today.ended .badge { background: #bfc7d1; color: #fff; }
+
 /* Calendar */
 .bkit-calendar { border: 1px solid #e2e2e2; border-radius: 12px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.04); max-width: 380px; margin: 0 auto; }
 .bkit-cal-head { display: flex; justify-content: center; margin-bottom: 8px; }
@@ -17,15 +18,18 @@
 .bkit-cell.day.open.clickable { cursor: pointer; }
 .bkit-cell.day.closed { background: #fdeaea; outline: 1px solid #f2c6c6; }
 .bkit-cell.day.disabled { opacity: .6; cursor: not-allowed; }
+
 /* Legend */
 .bkit-legend { display: flex; gap: 12px; margin-top: 10px; justify-content: center; }
 .bkit-legend .legend { display:inline-flex; align-items:center; gap:6px; }
 .bkit-legend .legend::before { content:""; width:14px; height:14px; display:inline-block; border-radius:4px; }
 .bkit-legend .legend.open::before { background:#e9f9ee; border:1px solid #bfead0; }
 .bkit-legend .legend.closed::before { background:#fdeaea; border:1px solid #f2c6c6; }
+
 /* Admin inputs */
 .bk-table-hours th, .bk-table-hours td { padding: 6px 10px; }
 .bk-table-hours input[type="text"], .bk-table-hours input[type="date"], .bk-table-hours input[type="tel"], .bk-table-hours input[type="email"], .bk-table-hours select { height: 36px; padding: 6px 8px; line-height: 24px; }
+
 /* Modal */
 .bkit-modal {
   position: fixed;
@@ -89,22 +93,23 @@
 }
 
 /* Past days greyed and disabled */
-.bkit-cell.day.past{background:#f2f2f2;color:#9aa0a6;cursor:not-allowed;}
-.bkit-cell.day.past .num{opacity:0.8}
+.bkit-cell.day.past { background:#f2f2f2; color:#9aa0a6; cursor:not-allowed; }
+.bkit-cell.day.past .num { opacity:0.8; }
+
 /* Calendar nav */
-.bkit-cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.bkit-cal-head .bkit-cal-title{font-weight:700}
-.bkit-cal-head .bkit-nav{display:inline-block;padding:2px 8px;border:1px solid #ddd;border-radius:6px;text-decoration:none}
-.bkit-cal-head .bkit-nav.disabled{opacity:.5;pointer-events:none}
+.bkit-cal-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.bkit-cal-head .bkit-cal-title { font-weight:700; }
+.bkit-cal-head .bkit-nav { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:6px; text-decoration:none; }
+.bkit-cal-head .bkit-nav.disabled { opacity:.5; pointer-events:none; }
 
 /* Calendar table rendering (robust vs theme button/list styles) */
-.bkit-calendar .bkit-cal-table{width:100%;border-collapse:separate;border-spacing:6px;table-layout:fixed}
+.bkit-calendar .bkit-cal-table { width:100%; border-collapse:separate; border-spacing:6px; table-layout:fixed; }
 .bkit-calendar .bkit-cal-table th,
-.bkit-calendar .bkit-cal-table td{padding:0;border:0}
-.bkit-calendar .bkit-cal-table .bkit-wd{background:#fafafa;font-weight:700}
-.bkit-calendar .bkit-cal-table .bkit-empty{background:transparent}
+.bkit-calendar .bkit-cal-table td { padding:0; border:0; }
+.bkit-calendar .bkit-cal-table .bkit-wd { background:#fafafa; font-weight:700; }
+.bkit-calendar .bkit-cal-table .bkit-empty { background:transparent; }
 
-.bkit-calendar .bkit-cal-table button.bkit-cell{
+.bkit-calendar .bkit-cal-table button.bkit-cell {
   width:100% !important;
   max-width:none !important;
   display:flex !important;
@@ -120,56 +125,84 @@
 }
 
 /* Zahlen im Kalender deutlicher */
-.bkit-calendar .bkit-cal-table button.bkit-cell .num{
+.bkit-calendar .bkit-cal-table button.bkit-cell .num {
   font-weight:800;
   font-size:1.05rem;
   line-height:1;
   color:#111;
   opacity:1;
 }
-.bkit-calendar .bkit-cal-table button.bkit-cell.day.open{background:#e9f9ee !important; outline:1px solid #bfead0}
-.bkit-calendar .bkit-cal-table button.bkit-cell.day.closed{background:#fdeaea !important; outline:1px solid #f2c6c6}
-.bkit-calendar .bkit-cal-table button.bkit-cell.day.open.clickable{cursor:pointer}
-.bkit-calendar .bkit-cal-table button.bkit-cell.day.disabled{opacity:.6;cursor:not-allowed}
-.bkit-calendar.is-loading{opacity:.6;pointer-events:none}
+
+.bkit-calendar .bkit-cal-table button.bkit-cell.day.open { background:#e9f9ee !important; outline:1px solid #bfead0; }
+.bkit-calendar .bkit-cal-table button.bkit-cell.day.closed { background:#fdeaea !important; outline:1px solid #f2c6c6; }
+.bkit-calendar .bkit-cal-table button.bkit-cell.day.open.clickable { cursor:pointer; }
+.bkit-calendar .bkit-cal-table button.bkit-cell.day.disabled { opacity:.6; cursor:not-allowed; }
+.bkit-calendar.is-loading { opacity:.6; pointer-events:none; }
 
 /* Opening Hours – kleine 2-Spalten-Tabelle */
-.bkit-opening-hours .bkit-oh-table{width:auto;border-collapse:collapse}
+.bkit-opening-hours .bkit-oh-table { width:auto; border-collapse:collapse; }
 .bkit-opening-hours .bkit-oh-table th,
-.bkit-opening-hours .bkit-oh-table td{padding:4px 10px 4px 0;vertical-align:top}
-.bkit-opening-hours .bkit-oh-table th.day{font-weight:700;white-space:nowrap;text-align:left;}
-.bkit-opening-hours .bkit-oh-table td.time.is-closed{opacity:.75;font-style:italic}
-.bk-day-idx{ margin-left:6px; color:#777; font-weight:600 }
-.bkit-wd .bk-wd-idx{ color:#777; font-size:.75em }
+.bkit-opening-hours .bkit-oh-table td { padding:4px 10px 4px 0; vertical-align:top; }
+.bkit-opening-hours .bkit-oh-table th.day { font-weight:700; white-space:nowrap; text-align:left; }
+.bkit-opening-hours .bkit-oh-table td.time.is-closed { opacity:.75; font-style:italic; }
+.bk-day-idx { margin-left:6px; color:#777; font-weight:600; }
+.bkit-wd .bk-wd-idx { color:#777; font-size:.75em; }
 
-.bkit-cell.day.closed{ cursor:pointer; }
-
-
-
-
+.bkit-cell.day.closed { cursor:pointer; }
 
 /* Harden Calendar layout against theme-wide button rules (e.g., width:100%) */
-.bkit-calendar .bkit-grid{
+.bkit-calendar .bkit-grid {
   display:grid !important;
   grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
 }
-.bkit-calendar .bkit-grid > *{
+
+.bkit-calendar .bkit-grid > * {
   margin:0 !important;
 }
-.bkit-calendar .bkit-grid button.bkit-cell{
+
+.bkit-calendar .bkit-grid button.bkit-cell {
   width:auto !important;
   max-width:none !important;
   display:block;
 }
-.bkit-calendar .bkit-grid button.bkit-cell:focus{
+
+.bkit-calendar .bkit-grid button.bkit-cell:focus {
   outline: 2px solid rgba(0,0,0,.15);
   outline-offset: 2px;
 }
 
 /* Opening Hours: apply pretty grid to the default shortcode output */
-.bkit-opening-hours ul.bk-oh-grid{
+.bkit-opening-hours ul.bk-oh-grid {
   margin: .5rem 0 0;
 }
-.bkit-opening-hours h3{
+
+.bkit-opening-hours h3 {
   margin: 0 0 .5rem;
+}
+
+.bkit-opening-hours .bkit-oh-table {
+  margin-bottom: 0 !important;
+}
+
+.bkit-opening-hours .bkit-opening-hours-note {
+  display: block !important;
+  width: 100%;
+  clear: both;
+  margin-top: 10px !important;
+  padding-top: 0 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  color: #555 !important;
+}
+
+@media (max-width: 768px) {
+  .bkit-opening-hours .bkit-opening-hours-note {
+    display: block !important;
+    width: 100%;
+    clear: both;
+    margin-top: 8px !important;
+    padding-top: 0 !important;
+    font-size: 0.82rem !important;
+    line-height: 1.35 !important;
+  }
 }
